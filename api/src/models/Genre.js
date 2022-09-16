@@ -12,7 +12,11 @@ module.exports = (sequelize) => {
         },
         name:{
             type: DataTypes.STRING(255),
-            allowNull:false,
+            allowNull:false,    
+        },
+        image:{
+            type: DataTypes.STRING(255)
+            
         },
         created:{
             type: DataTypes.STRING(255)
