@@ -29,7 +29,7 @@ module.exports = (sequelize) => {
     plataforms:{
       type: DataTypes.STRING(255)
     },
-    crated:{
+    created:{
       type: DataTypes.STRING(255)
     }
     
