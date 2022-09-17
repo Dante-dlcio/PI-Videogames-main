@@ -10,8 +10,7 @@ const API_KEY = process.env;
                     id: g.id,
                     name: g.name,
                     image: g.image_background
-                    }))
-                    console.log(genres)
+                    }));
             await Genre.bulkCreate(genres);
             console.log('episodios creados')
         }else{
