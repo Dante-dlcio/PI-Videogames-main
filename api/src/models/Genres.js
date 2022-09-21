@@ -10,6 +10,9 @@ module.exports = (sequelize) => {
             allowNull:false,
             primaryKey:true
         },
+        apiId:{
+            type: DataTypes.INTEGER,            
+        },
         name:{
             type: DataTypes.STRING(255),
             allowNull:false,    

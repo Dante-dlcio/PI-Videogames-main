@@ -1,10 +1,10 @@
 const{ Router } = require('express');
 const router = require('.');
-const{getGames } = require('../controllers/getGamesAPI&DB')
+const{getGames } = require('../controllers/getGames')
 const{ } = require()
 const{ } = require()
 const{ } = require()
-
+//
 router.get('', async (req,res) =>{
     let allGames = await getGames()
         try {
