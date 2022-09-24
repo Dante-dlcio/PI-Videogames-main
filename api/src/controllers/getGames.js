@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { Videogames,Genres } = require("../db");
+const { Videogames, Genres } = require("../db");
 const router = require("../routes");
 const { API_KEY } = process.env;
 
@@ -20,8 +20,7 @@ const getGames = async () => {
       promises.push(getUrl(URL + `&page=${i}`));
     }
     let games = await Promise.all(promises).then((results) => results.flat());
-    //console.log()
-    // console.log(juegos)
+
     let apiGames = [];
     for (let i = 0; i < games.length; i++) {
       let game = games[i];
@@ -34,7 +33,6 @@ const getGames = async () => {
         plataforms: game.platforms.map((p) => p.platform.name),
       });
     }
-    //console.log(apiGames)
 
     return apiGames;
   } catch (error) {
@@ -43,15 +41,20 @@ const getGames = async () => {
 };
 
 const getGamesDb = async () => {
-  return await Videogames.findAll({
-    include: {
-      model: Genres,
-      attributes: ["name"],
-      through: {
-        attributes: [],
+  try {
+    let dbCreated = await Videogames.findAll({
+      include: {
+        model: Genres,
+        attributes: ["name"],
+        through: {
+          attributes: [],
+        },
       },
-    },
-  });
+    });
+    return dbCreated;
+  } catch (error) {
+    return error;
+  }
 };
 
 const getAllGames = async () => {
@@ -62,12 +65,30 @@ const getAllGames = async () => {
 };
 
 const getAll = async (req, res) => {
+  let name = req.query.name;
+  let games = await getAllGames();
+
   try {
-    let response = await getAllGames();
-    res.status(200).send(response);
+    if (name) {
+      let gameName = games.filter((g) =>
+        g.name.toLowerCase().includes(name.toLowerCase())
+      );
+
+      if (gameName.length) {
+        let just15 = gameName.slice(0, 15);
+        const count = just15.length;
+        res.status(200).send({
+          count,
+          just15,
+        });
+      } else {
+        res.status(404).send("Game not found");
+      }
+    }
+    res.status(200).send(games);
   } catch (error) {
     console.log(error);
   }
 };
 
-module.exports = { getAllGames, getGamesDb, getGames, getAll };
+module.exports = { getAllGames, getAll };
