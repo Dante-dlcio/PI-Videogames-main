@@ -1,26 +1,35 @@
-require('dotenv').config
-const axios = require('axios')
+require("dotenv").config;
+const axios = require("axios");
+const { API_KEY } = process.env;
 
-
-const getGameDetail =  (idNum) => { 
-    let url = `https://api.rawg.io/api/games/${idNum}?key=${API_KEY} `
-    axios.get(url).then((res) => {
-      let resp = res.data
-      return {
-        'id' : resp.id,
-        'name': resp.name,
-        'release': resp.released,
-        'rating': resp.rating,
-        'plataforms' : resp.parent_platforms.map((p) => p.platform.name),
-        'genres' : resp.genres.map((g)=>g.name),
-        'description': resp.description_raw
-        }
-      
-    }).catch((err)=>{
-      console.log("error catching details", err)
-    })
+const gameDetail = async (id) => {
+  let url = `https://api.rawg.io/api/games/${id}?key=${API_KEY} `;
+  try {
+    let response = await axios.get(url);
+    let result = {
+      id: response.data.id,
+      name: response.data.name,
+      release: response.data.released,
+      rating: response.data.rating,
+      plataforms: response.data.parent_platforms.map((p) => p.platform.name),
+      genres: response.data.genres.map((g) => g.name),
+      description: response.data.description_raw,
+    };
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log("error catching details", err);
   }
- 
-  
+};
 
-  module.exports = {getGameDetail}
+const getDetail = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let response = await gameDetail(id);
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(404).send(error);
+  }
+};
+
+module.exports = { getDetail };
