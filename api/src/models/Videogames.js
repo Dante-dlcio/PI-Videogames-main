@@ -18,7 +18,7 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(1024),
       allowNull: false,
     },
-    release: {
+    releaseDate: {
       type: DataTypes.STRING(255),
       allowNull: false
     },
@@ -26,7 +26,7 @@ module.exports = (sequelize) => {
       type: DataTypes.DECIMAL(10,2),
       allowNull: false
     },
-    plataforms:{
+    platforms:{
       type: DataTypes.STRING(255)
     },
     created:{

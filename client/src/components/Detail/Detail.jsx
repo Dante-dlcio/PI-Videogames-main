@@ -7,6 +7,7 @@ export default function Detail() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const details = useSelector((state) => state.videogame);
+  console.log(details)
 
   useEffect(() => {
     dispatch(getGameById(id));
@@ -16,11 +17,9 @@ export default function Detail() {
       <div>
         <Link to={`/home`}>
           <h1>{details.name}</h1>
-          <h2>{details.release}</h2>
+          <h2>{details.releaseDate}</h2>
           <h2>{details.rating}</h2>
-          {details.platforms?.map((p) => {
-            <h2>{p}</h2>;
-          })}
+          {details.platforms?.map((p) => <h2>{p}</h2>)}
           <h2> {details.genres}</h2>
           <h2>{details.description}</h2>
         </Link>

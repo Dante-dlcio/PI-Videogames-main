@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import style from "../componentsCSS/LandingPage.module.CSS"
+ 
 
 export function LandingPage() {
   return (
@@ -7,7 +9,7 @@ export function LandingPage() {
       <div>
         <h1>Welcome to All You Can Play</h1>
       </div>
-      <div>
+      <div className = {style.background}>
         <Link to="/home">
           <button>Press Start</button>
         </Link>

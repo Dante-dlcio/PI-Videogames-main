@@ -23,11 +23,15 @@ export function getGenres() {
 
 export function getGameByName(name) {
   return async function (dispatch) {
+    try {
     let json = await axios.get(`http://localhost:3001/videogames?name=${name}`);
-    return dispatch({
-      type: "GET_GAME_BY_NAME",
-      payload: json.data,
-    });
+      return dispatch({
+        type: "GET_GAME_BY_NAME",
+        payload: json.data.just15,
+      });
+    } catch (e) {
+      alert("no game found")
+    }
   };
 }
 

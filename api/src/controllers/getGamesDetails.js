@@ -9,13 +9,12 @@ const gameDetail = async (id) => {
     let result = {
       id: response.data.id,
       name: response.data.name,
-      release: response.data.released,
+      releaseDate: response.data.released,
       rating: response.data.rating,
-      plataforms: response.data.parent_platforms.map((p) => p.platform.name),
+      platforms: response.data.parent_platforms.map((p) => p.platform.name),
       genres: response.data.genres.map((g) => g.name),
       description: response.data.description_raw,
     };
-    console.log(result);
     return result;
   } catch (err) {
     console.log("error catching details", err);

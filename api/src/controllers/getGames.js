@@ -1,22 +1,18 @@
 require("dotenv").config();
 const { Videogames, Genres } = require("../db");
-const router = require("../routes");
 const { API_KEY } = process.env;
 
-//GAMES FROM API
+//API GAMES
 
-//save the url and API key in a variable
 const URL = `https://api.rawg.io/api/games?key=${API_KEY}`;
-//save function getUrl, to fetch the data and position itself in the api results
 const getUrl = (url) =>
   fetch(url)
     .then((r) => r.json())
     .then((x) => x.results);
-//start with the getGames function
 const getGames = async () => {
   try {
     const promises = [];
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
       promises.push(getUrl(URL + `&page=${i}`));
     }
     let games = await Promise.all(promises).then((results) => results.flat());
@@ -28,9 +24,9 @@ const getGames = async () => {
         id: game.id,
         name: game.name,
         image: game.background_image,
-        release: game.released,
+        releaseDate: game.released,
         rating: game.rating,
-        plataforms: game.platforms.map((p) => p.platform.name),
+        platforms: game.platforms.map((p) => p.platform.name),
       });
     }
 

@@ -2,14 +2,14 @@ const { Videogames, Genres } = require("../db");
 
 const createGame = async (req, res) => {
   try {
-    const { name, description, release, rating, plataforms, created, genres } =
+    const { name, description, releaseDate, rating, platforms, created, genres } =
       req.body;
     let results = await Videogames.create({
       name,
       description,
-      release,
+      releaseDate,
       rating,
-      plataforms,
+      platforms,
       created,
     });
     genres.forEach(async (genre) => {
@@ -24,6 +24,7 @@ const createGame = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(404).send("couldn't find genres")
   }
 };
 
