@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import style from "../componentsCSS/LandingPage.module.CSS"
+import styles from "../componentsCSS/LandingPage.module.CSS"
  
 
 export function LandingPage() {
@@ -9,7 +9,7 @@ export function LandingPage() {
       <div>
         <h1>Welcome to All You Can Play</h1>
       </div>
-      <div className = {style.background}>
+      <div className = {styles.background}>
         <Link to="/home">
           <button>Press Start</button>
         </Link>

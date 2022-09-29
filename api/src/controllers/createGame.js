@@ -12,6 +12,7 @@ const createGame = async (req, res) => {
       platforms,
       created,
     });
+    console.log(genres)
     genres.forEach(async (genre) => {
 
       let genreId = await Genres.findAll({ where: { name: genre } }); 

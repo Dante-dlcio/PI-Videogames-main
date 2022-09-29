@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux'
-import { getGameByName } from '../../redux/actions';
+import { getAllGames, getGameByName } from '../../redux/actions';
 
 
 export default function SearchBar() {
@@ -15,7 +15,10 @@ export default function SearchBar() {
     }
     function handleSubmit(e) {
         e.preventDefault();
-        dispatch(getGameByName(name));
+        if(name){
+        dispatch(getGameByName(name))
+        }else
+        dispatch(getAllGames());
     }
 
     return (

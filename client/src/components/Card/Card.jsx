@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import cardstyle from '../componentsCSS/Card.module.css'
 
-export default function Card({ id, name, image, release, rating, platforms }) {
+export default function Card({ id, name, image, release, rating, genres, platforms }) {
+  console.log(genres)
   return (
     <div className={cardstyle.dis}>
       <Link to={`/videogame/${id}`}>
@@ -11,7 +12,9 @@ export default function Card({ id, name, image, release, rating, platforms }) {
         <h2>{release}</h2>
         <h2>{rating}</h2>
         {typeof platforms == 'string'? <h2>{platforms}</h2> : platforms?.map((p) => <h2>{p}</h2>)}
-      </Link>
+        {typeof genres == 'string'? <h2>{genres}</h2> : genres?.map((g) => <h2>{g.name}</h2>)}
+
+        </Link>
     </div>
   );
 }

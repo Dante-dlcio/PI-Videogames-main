@@ -2,6 +2,11 @@ const initialState = {
   videogame: {},
   videogames: [],
   genres: [],
+  filters: {
+    byOrigin: "All",
+    byGenre: "",
+  }
+
 };
 
 export default function reducer(state = initialState, action) {
@@ -30,6 +35,17 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
       };
+    case "FILTER_BY_ORIGIN":
+      return {
+        ...state,
+        filters: { ...state.filters, byOrigin: action.payload }
+      };
+    case "FILTER_BY_GENRE":
+      return{
+        ...state,
+        filters: { ...state.filters, byGenre: action.payload}
+      } ; 
+
     default:
       return state;
   }
