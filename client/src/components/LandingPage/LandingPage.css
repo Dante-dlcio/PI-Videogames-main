@@ -1,0 +1,70 @@
+.background {
+    background-image: url(../../resources/Landing.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    height: 100vh;
+}
+
+.container-h1 {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 200px;
+}
+
+@font-face {
+    font-family: "SnesItalic";
+    src: url("../../resources/font/SnesItalic-1G9Be.ttf");
+}
+.welcome {
+    font-family: "SnesItalic";
+    src: url("../../resources/font/SnesItalic-1G9Be.ttf");
+    font-size: 13rem;
+}
+
+.container-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 6rem;
+}
+
+@font-face {
+    font-family: "IconicPS";
+    src: url("../../resources/font/Iconic\ PSx.ttf");
+}
+
+.button {
+    background-color: gray;
+    position: relative;
+    padding: 10px 40px;
+    margin: 0px 8px 8px 0px;
+    float: left;
+    border-radius: 2rem;
+    font-family: "IconicPS";
+    src: url("../../resources/font/Iconic\ PSx.ttf");
+    font-size: 3rem;
+    border-bottom: 5px solid gray;
+    text-shadow: 0px -2px #b1b9af;
+    -webkit-transition: all 0.1s;
+    transition: all 0.1s;
+}
+.button:hover,
+.button:active {
+    -webkit-transform: translate(0px, 5px);
+    -ms-transform: translate(0px, 5px);
+    transform: translate(0px, 5px);
+    border-bottom: 1px solid #5e6994;
+}
+
+.footer{
+    position:absolute;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1rem;
+    top: 1000px
+}

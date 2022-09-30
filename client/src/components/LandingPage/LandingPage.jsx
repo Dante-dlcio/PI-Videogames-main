@@ -1,21 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styles from "../componentsCSS/LandingPage.module.CSS"
+import './LandingPage.css'
  
 
 export function LandingPage() {
   return (
-    <div>
-      <div>
-        <h1>Welcome to All You Can Play</h1>
+    <div className="background">
+      <div className= "container-h1">
+        <h1 className="welcome">WELCOME TO ALL YOU CAN PLAY</h1>
       </div>
-      <div className = {styles.background}>
+      <div className="container-button">
         <Link to="/home">
-          <button>Press Start</button>
+          <button className="button">a</button>
         </Link>
       </div>
 
-      <p>
+      <p className="footer">
         This Individual Project was created by Erio Donalicio for Henry Full
         Stack Developer Academy, hope you like it.
       </p>
