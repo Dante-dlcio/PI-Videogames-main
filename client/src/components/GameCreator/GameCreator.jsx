@@ -150,7 +150,7 @@ export default function GameCreator() {
         }
 
         return (
-            <div className="container-form">
+            <div >
                 <h3>Create your own game here!</h3>
                 <form onSubmit={(e) => handleSubmit(e)}>
                     <div>
@@ -162,7 +162,8 @@ export default function GameCreator() {
                             name="name"
                             onChange={(e) => handleOnChange(e)}
                         ></input>
-                        {errors.name && <p>{errors.name}</p>}
+                        {/* //aclarar  errores y algun label y setear error de plataforma*/}
+                        {errors.name && <p>{errors.name}</p>} 
                     </div>
                     <div>
                         <label htmlFor="description">description </label>
@@ -251,7 +252,7 @@ export default function GameCreator() {
                     </div>
 
 
-                    <button className="button-create" type="submit">
+                    <button type="submit">
                         Create Game
                     </button>
                 </form>

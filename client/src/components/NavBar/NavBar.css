@@ -1,0 +1,11 @@
+.container-gf {
+    background-color: rgba(red, green, blue, alpha);
+    height: 87px;
+    width: 100%;
+}
+
+.container-nav-father {
+    display: flex;
+    justify-content: space-around;
+    
+}

@@ -1,0 +1,38 @@
+.home-background {
+    background-image: url(../../resources/Landing.jpg);
+    background-repeat: no-repeat;
+    background-size: 120%;
+    position: relative;
+    height:100%;
+}
+
+.grid-container{
+    display: grid;
+   grid-template-columns: auto auto auto auto auto;
+   justify-content: center;
+   width: 80%;
+   margin: auto auto; 
+   margin-top: 30px;
+}
+.card {
+    
+    text-transform: capitalize;
+    width: 270px;
+    height: 25 rem;
+    font-size: smaller;
+    background-color: #f8f8f8;
+    border-color: black;
+    border-radius: 3rem;
+    border-style: dashed;
+    padding: 15px;
+    margin: 35px;
+    box-shadow: 28px 26px 20px -11px rgba(0,0,0,0.44);
+    -webkit-box-shadow: 28px 26px 20px -11px rgba(0,0,0,0.44);
+    -moz-box-shadow: 28px 26px 20px -11px rgba(0,0,0,0.44);
+}
+
+.image{
+    width: 16rem;
+    height: 10rem;
+    border-radius: 2rem;
+}

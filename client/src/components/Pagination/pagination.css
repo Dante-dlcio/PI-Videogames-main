@@ -1,5 +1,8 @@
 .pagination-buttons {
-    position:absolute;
+    color:coral;
+    padding-top: 1rem;
+    align-items: center;
+    position: relative;
     bottom: 10px;
     z-index: 1000000;
     left: 45vw;

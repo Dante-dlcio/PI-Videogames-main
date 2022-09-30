@@ -10,6 +10,7 @@ import {
     setOriginFilter,
     setOrders
 } from '../../redux/actions';
+import './NavBar.css'
 
 
 export default function NavBar() {
@@ -22,11 +23,7 @@ export default function NavBar() {
     useEffect(() => {
         dispatch(getGenres())
     }, []);
-
-    function handleOnClick(e) {
-        e.preventDefault();
-        dispatch(getAllGames());
-    }
+   
     function handleOriginOnChange(e) {
         dispatch(setOriginFilter(e.target.options[e.target.options.selectedIndex].value))
     }
@@ -36,36 +33,45 @@ export default function NavBar() {
     }
 
     function handleOrdersOnChange(e) {
-         dispatch(setOrders(e.target.options.selectedIndex))
+        dispatch(setOrders(e.target.options.selectedIndex))
     }
 
 
     return (
         <>
-            <SearchBar />
-            <select defaultValue = '' onChange={handleGenreOnChange}>
-                <option value = ''>genre</option>
-                {
-                    genres?.map(g => (
-                        <option value={g.name}>
-                            {g.name}
-                        </option>
-                    ))
-                }
-            </select>
-            <select defaultValue="All" onChange={handleOriginOnChange}>
-                <option value="All">All</option>
-                <option value="Api">RAWG</option>
-                <option value="Db">Data Base</option>
-            </select>
-            <select defaultValue="1" onChange ={handleOrdersOnChange}>
-                <option>A-Z</option>
-                <option>Z-A</option>
-                <option>Rating Asc</option>
-                <option>Rating Desc</option>
-            </select>
-            <Link to={'/createGame'} />
-
+            <div className='container-gf'>
+                <div className='selectors-bar-child'>
+                    <SearchBar />
+                </div>
+                <div className='container-nav-father'>
+                    <div className='selectors-child'>
+                        <select defaultValue='' onChange={handleGenreOnChange}>
+                            <option value=''>genre</option>
+                            {
+                                genres?.map(g => (
+                                    <option value={g.name}>
+                                        {g.name}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                        <select defaultValue="All" onChange={handleOriginOnChange}>
+                            <option value="All">All</option>
+                            <option value="Api">RAWG</option>
+                            <option value="Db">Data Base</option>
+                        </select>
+                        <select defaultValue="1" onChange={handleOrdersOnChange}>
+                            <option>A-Z</option>
+                            <option>Z-A</option>
+                            <option>Rating Asc</option>
+                            <option>Rating Desc</option>
+                        </select>
+                        <Link to="/create">
+                            <button>Create your videogame</button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </>
 
     )
