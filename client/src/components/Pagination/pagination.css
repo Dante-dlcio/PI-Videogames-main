@@ -1,0 +1,26 @@
+.pagination-buttons {
+    position:absolute;
+    bottom: 10px;
+    z-index: 1000000;
+    left: 45vw;
+    display: flex;
+}
+
+.pagination-buttons > div {
+    width: 20px;
+    margin: 2px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+}
+
+.current {
+    font-size: 1.3em;
+    line-height: 21px;
+    color: aqua;
+}
+
+
+.pagination-buttons > div:active {
+    color: red;
+}

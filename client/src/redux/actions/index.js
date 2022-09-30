@@ -58,7 +58,7 @@ export function postGame(payload) {
 export function setOriginFilter(filter) {
   return async function (dispatch) {
     return dispatch({
-      type: 'FILTER_BY_ORIGIN',
+      type: "FILTER_BY_ORIGIN",
       payload: filter,
     })
   }
@@ -66,8 +66,43 @@ export function setOriginFilter(filter) {
 export function setGenreFilter(filter) {
   return async function (dispatch) {
     return dispatch({
-      type: 'FILTER_BY_GENRE',
+      type: "FILTER_BY_GENRE",
       payload: filter,
     })
   }
+}
+
+export function setOrders(orders) {
+  return async function (dispatch) {
+    return dispatch({
+      type: "SET_ORDERS",
+      payload: orders
+    })
+  }
+}
+
+export function setPage(page) {
+  return async function (dispatch) {
+    return dispatch({
+      type: "SET_PAGE",
+      payload: page,
+    });
+  };
+}
+
+export function previousPage() {
+  return async function (dispatch) {
+    return dispatch({
+      type: "PREVIOUS_PAGE",
+    });
+  };
+}
+
+export function nextPage() {
+  return async function (dispatch) {
+    return dispatch({
+      type: "NEXT_PAGE",
+
+    });
+  };
 }

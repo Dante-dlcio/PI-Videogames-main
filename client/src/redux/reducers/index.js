@@ -5,7 +5,10 @@ const initialState = {
   filters: {
     byOrigin: "All",
     byGenre: "",
-  }
+  },
+  orders: 0,
+  page: 0,
+  videogamesPerPage: 15
 
 };
 
@@ -41,10 +44,33 @@ export default function reducer(state = initialState, action) {
         filters: { ...state.filters, byOrigin: action.payload }
       };
     case "FILTER_BY_GENRE":
-      return{
+      return {
         ...state,
-        filters: { ...state.filters, byGenre: action.payload}
-      } ; 
+        filters: { ...state.filters, byGenre: action.payload }
+      };
+    case "SET_ORDERS":
+      return {
+        ...state,
+        orders: action.payload,
+      };
+
+    case "SET_PAGE":
+      return {
+        ...state,
+        page: action.payload,
+      };
+
+    case "PREVIOUS_PAGE":
+      return {
+        ...state,
+        page: state.page - 1,
+      };
+
+    case "NEXT_PAGE":
+      return {
+        ...state,
+        page: state.page + 1,
+      };
 
     default:
       return state;

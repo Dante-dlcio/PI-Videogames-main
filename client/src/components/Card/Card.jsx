@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import cardstyle from '../componentsCSS/Card.module.css'
 
 export default function Card({ id, name, image, release, rating, genres, platforms }) {
-  console.log(genres)
   return (
     <div className={cardstyle.dis}>
       <Link to={`/videogame/${id}`}>

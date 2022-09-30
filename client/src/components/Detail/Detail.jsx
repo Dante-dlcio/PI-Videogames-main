@@ -7,7 +7,7 @@ export default function Detail() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const details = useSelector((state) => state.videogame);
-  console.log(details)
+
 
   useEffect(() => {
     dispatch(getGameById(id));

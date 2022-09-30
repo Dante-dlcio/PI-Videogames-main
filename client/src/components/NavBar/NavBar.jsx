@@ -7,7 +7,8 @@ import {
     getAllGames,
     getGenres,
     setGenreFilter,
-    setOriginFilter
+    setOriginFilter,
+    setOrders
 } from '../../redux/actions';
 
 
@@ -34,6 +35,10 @@ export default function NavBar() {
         dispatch(setGenreFilter(e.target.options[e.target.options.selectedIndex].value))
     }
 
+    function handleOrdersOnChange(e) {
+         dispatch(setOrders(e.target.options.selectedIndex))
+    }
+
 
     return (
         <>
@@ -53,11 +58,9 @@ export default function NavBar() {
                 <option value="Api">RAWG</option>
                 <option value="Db">Data Base</option>
             </select>
-            <select >
+            <select defaultValue="1" onChange ={handleOrdersOnChange}>
                 <option>A-Z</option>
                 <option>Z-A</option>
-            </select>
-            <select>
                 <option>Rating Asc</option>
                 <option>Rating Desc</option>
             </select>

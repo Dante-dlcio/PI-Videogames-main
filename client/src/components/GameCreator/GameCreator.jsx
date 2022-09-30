@@ -131,7 +131,7 @@ export default function GameCreator() {
                 validate.genres.condition(input.genres)
             ) {
                 input.platforms = input.platforms.toString()
-                console.log(input)
+             
                 dispatch(postGame(input));
                 alert(
                     "Your game was created successfully and is waiting for you. Now you can go to Home Page to see it"
