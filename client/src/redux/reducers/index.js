@@ -41,16 +41,19 @@ export default function reducer(state = initialState, action) {
     case "FILTER_BY_ORIGIN":
       return {
         ...state,
+        page:0,
         filters: { ...state.filters, byOrigin: action.payload }
       };
     case "FILTER_BY_GENRE":
       return {
         ...state,
+        page:0,
         filters: { ...state.filters, byGenre: action.payload }
       };
     case "SET_ORDERS":
       return {
         ...state,
+        page:0,
         orders: action.payload,
       };
 

@@ -30,18 +30,17 @@ export default function Home() {
   useEffect(() => {
     dispatch(getAllGames());
   }, []);
+  const filteredGames =  videogames?.sort(orderBy[orders])
+  .filter(originFilters[filters.byOrigin])
+  .filter(genresFilters)
   return (
     <>
     <div className="home-background">
 
       <NavBar />
       <div className="grid-container" >
-        {videogames &&
-          videogames?.sort(orderBy[orders])
-            .filter(originFilters[filters.byOrigin])
-            .filter(genresFilters)
-            .filter(pagination)
-            .map((v) => {
+        {filteredGames &&
+            filteredGames.filter(pagination).map((v) => {
               return (
                 <Card
                   key={v.id}
@@ -59,7 +58,7 @@ export default function Home() {
       </div>
       {!videogames.length && <h2>No game was found with that name</h2>}
 
-      <Pagination />
+      <Pagination filtered={filteredGames} />
     </div>
     </>
   );

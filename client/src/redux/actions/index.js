@@ -41,6 +41,7 @@ export function getGameByName(name) {
 export function getGameById(id) {
   return async function (dispatch) {
     let json = await axios.get(`http://localhost:3001/videogame/${id}`);
+    console.log(json)
     return dispatch({
       type: "GET_GAME_BY_ID",
       payload: json.data,
