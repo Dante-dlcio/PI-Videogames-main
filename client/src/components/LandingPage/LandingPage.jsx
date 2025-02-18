@@ -7,7 +7,7 @@ export function LandingPage() {
   return (
     <div className="background">
       <div className= "container-h1">
-        <h1 className="welcome">WELCOME TO ALL YOU CAN PLAY</h1>
+        <h1 className="welcome">WELCOME TO THE GAMING DATABASE</h1>
       </div>
       <div className="container-button">
         <Link to="/home">

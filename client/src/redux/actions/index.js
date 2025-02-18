@@ -72,6 +72,15 @@ export function setGenreFilter(filter) {
     })
   }
 }
+export function filterByRating(filter) {
+  return async function (dispatch) {
+    return dispatch({
+      type: "FILTER_BY_RATING",
+      payload: filter,
+    })
+
+  }
+}
 
 export function setOrders(orders) {
   return async function (dispatch) {

@@ -20,6 +20,7 @@ const alphabetical = (a, b) => {
 const alphabeticalInverse = (a, b) => alphabetical(a, b) * -1
 const byRatingAsc = (a, b) => a.rating - b.rating
 const byRatingDesc = (a, b) => b.rating - a.rating
+
 const orderBy = [alphabetical, alphabeticalInverse, byRatingAsc, byRatingDesc]
 
 export default function Home() {
@@ -27,19 +28,22 @@ export default function Home() {
   const { videogames, filters, orders, videogamesPerPage, page } = useSelector(state => state);
   const genresFilters = videogame => videogame.genres?.some(g => g.name === filters.byGenre || !filters.byGenre);
   const pagination = (_, i) => videogamesPerPage * page <= i && i < videogamesPerPage * (page + 1)
+  const fourStarsFilter = (el) => el.rating >= 4
+
   useEffect(() => {
     dispatch(getAllGames());
-  }, []);
-  const filteredGames =  videogames?.sort(orderBy[orders])
-  .filter(originFilters[filters.byOrigin])
-  .filter(genresFilters)
+  }, [dispatch]);
+  let filteredGames = videogames?.sort(orderBy[orders])
+    .filter(originFilters[filters.byOrigin])
+    .filter(genresFilters)
+  filteredGames = filters.byRating ? filteredGames.filter(fourStarsFilter) : filteredGames
   return (
     <>
-    <div className="home-background">
+      <div className="home-background">
 
-      <NavBar />
-      <div className="grid-container" >
-        {filteredGames &&
+        <NavBar />
+        <div className="grid-container" >
+          {filteredGames &&
             filteredGames.filter(pagination).map((v) => {
               return (
                 <Card
@@ -54,12 +58,12 @@ export default function Home() {
                 />
               );
             })
-        }
-      </div>
-      {!videogames.length && <h2>No game was found with that name</h2>}
+          }
+        </div>
+        {!videogames.length && <h2>No game was found with that name</h2>}
 
-      <Pagination filtered={filteredGames} />
-    </div>
+        <Pagination filtered={filteredGames} />
+      </div>
     </>
   );
 }

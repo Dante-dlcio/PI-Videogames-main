@@ -1,3 +1,4 @@
+
 const initialState = {
   videogame: {},
   videogames: [],
@@ -5,6 +6,7 @@ const initialState = {
   filters: {
     byOrigin: "All",
     byGenre: "",
+    byRating: false,
   },
   orders: 0,
   page: 0,
@@ -27,6 +29,7 @@ export default function reducer(state = initialState, action) {
     case "GET_GAME_BY_NAME":
       return {
         ...state,
+        page: 0,
         videogames: action.payload,
       };
     case "GET_GAME_BY_ID":
@@ -41,19 +44,25 @@ export default function reducer(state = initialState, action) {
     case "FILTER_BY_ORIGIN":
       return {
         ...state,
-        page:0,
+        page: 0,
         filters: { ...state.filters, byOrigin: action.payload }
       };
     case "FILTER_BY_GENRE":
       return {
         ...state,
-        page:0,
+        page: 0,
         filters: { ...state.filters, byGenre: action.payload }
       };
+    case "FILTER_BY_RATING":
+      return {
+        ...state,
+        filters: { ...state.filters, byRating: true }
+      }
+
     case "SET_ORDERS":
       return {
         ...state,
-        page:0,
+        page: 0,
         orders: action.payload,
       };
 

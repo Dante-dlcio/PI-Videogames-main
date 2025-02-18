@@ -1,5 +1,5 @@
 .pagination-buttons {
-    color:coral;
+    color: coral;
     padding-top: 1rem;
     align-items: center;
     position: relative;
@@ -22,7 +22,6 @@
     line-height: 21px;
     color: aqua;
 }
-
 
 .pagination-buttons > div:active {
     color: red;

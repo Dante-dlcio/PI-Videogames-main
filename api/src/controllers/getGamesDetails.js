@@ -16,6 +16,8 @@ const gameDetailApi = async (id) => {
       platforms: response.data.parent_platforms.map((p) => p.platform.name),
       genres: response.data.genres.map((g) => g.name),
       description: response.data.description_raw,
+      image: response.data.background_image,
+      backgroundImage: response.data.background_image_additional,
     };
     return result;
   } catch (err) {

@@ -12,7 +12,7 @@ const getUrl = (url) =>
 const getGames = async () => {
   try {
     const promises = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 10; i++) {
       promises.push(getUrl(URL + `&page=${i}`));
     }
     let games = await Promise.all(promises).then((results) => results.flat());
@@ -26,7 +26,7 @@ const getGames = async () => {
         image: game.background_image,
         releaseDate: game.released,
         genres:game.genres.map((g) => ({name: g.name})),
-        rating: game.rating,
+        rating: game.metacritic,
         platforms: game.platforms.map((p) => p.platform.name),
       });
     }
@@ -88,4 +88,4 @@ const getAll = async (req, res) => {
   }
 };
 
-module.exports = { getAllGames, getAll };
+module.exports = { getAllGames, getAll, getUrl };

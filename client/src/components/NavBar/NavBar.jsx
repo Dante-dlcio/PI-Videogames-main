@@ -8,22 +8,27 @@ import {
     getGenres,
     setGenreFilter,
     setOriginFilter,
-    setOrders
+    setOrders,
+    filterByRating
 } from '../../redux/actions';
 import './NavBar.css'
 
 
 export default function NavBar() {
     const dispatch = useDispatch();
-    const genres = useSelector((state) => state.genres)
+    const { genres, orders, filters } = useSelector((state) => state)
 
     useEffect(() => {
         dispatch(getAllGames())
-    }, []);
+    }, [dispatch]);
     useEffect(() => {
         dispatch(getGenres())
-    }, []);
-   
+    }, [dispatch]);
+
+    function handleRatingOnClick() {
+        dispatch(filterByRating())
+    }
+
     function handleOriginOnChange(e) {
         dispatch(setOriginFilter(e.target.options[e.target.options.selectedIndex].value))
     }
@@ -45,7 +50,7 @@ export default function NavBar() {
                 </div>
                 <div className='container-nav-father'>
                     <div className='selectors-child'>
-                        <select defaultValue='' onChange={handleGenreOnChange}>
+                        <select defaultValue={filters.byGenre} onChange={handleGenreOnChange}>
                             <option value=''>genre</option>
                             {
                                 genres?.map(g => (
@@ -55,20 +60,23 @@ export default function NavBar() {
                                 ))
                             }
                         </select>
-                        <select defaultValue="All" onChange={handleOriginOnChange}>
+                        <select value={filters.byOrigin} onChange={handleOriginOnChange}>
                             <option value="All">All</option>
                             <option value="Api">RAWG</option>
                             <option value="Db">Data Base</option>
                         </select>
-                        <select defaultValue="1" onChange={handleOrdersOnChange}>
-                            <option>A-Z</option>
-                            <option>Z-A</option>
-                            <option>Rating Asc</option>
-                            <option>Rating Desc</option>
+                        <select value={orders} onChange={handleOrdersOnChange}>
+                            <option value='0'>A-Z</option>
+                            <option value='1'>Z-A</option>
+                            <option value='2'>Rating Asc</option>
+                            <option value='3'>Rating Desc</option>
                         </select>
                         <Link to="/create">
                             <button>Create your videogame</button>
                         </Link>
+                        <button onClick={handleRatingOnClick}>
+                            4 stars or more
+                        </button>
                     </div>
                 </div>
             </div>

@@ -162,7 +162,6 @@ export default function GameCreator() {
                             name="name"
                             onChange={(e) => handleOnChange(e)}
                         ></input>
-                        {/* //aclarar  errores y algun label y setear error de plataforma*/}
                         {errors.name && <p>{errors.name}</p>} 
                     </div>
                     <div>
