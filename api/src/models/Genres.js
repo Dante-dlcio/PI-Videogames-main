@@ -10,22 +10,24 @@ module.exports = (sequelize) => {
             allowNull:false,
             primaryKey:true
         },
-        apiId:{
-            type: DataTypes.INTEGER,            
+        api_id:{
+            type: DataTypes.INTEGER,
+            allowNull:true,
         },
         name:{
             type: DataTypes.STRING(255),
             allowNull:false,    
         },
         image:{
-            type: DataTypes.STRING(255)
-            
+            type: DataTypes.STRING(255),
+            allowNull:true,
         },
         created:{
-            type: DataTypes.STRING(255)
-        }
-        
+            type: DataTypes.BOOLEAN,
+            toDefaultValue:false,
+        }       
     },{
-        timestapms: false 
-    })
-}
+        timeStamps: false,
+        underscored:true,
+    });
+};

@@ -1,91 +1,94 @@
 require("dotenv").config();
+const axios = require("axios");
 const { Videogames, Genres } = require("../db");
 const { API_KEY } = process.env;
 
-//API GAMES
+// GAMES
 
 const URL = `https://api.rawg.io/api/games?key=${API_KEY}`;
-const getUrl = (url) =>
-  fetch(url)
-    .then((r) => r.json())
-    .then((x) => x.results);
+let cachedGames = null;
+let lastFetch = 0;
+const CACHE_TIME = 1000 * 60 * 10;
+
 const getGames = async () => {
   try {
-    const promises = [];
-    for (let i = 1; i <= 10; i++) {
-      promises.push(getUrl(URL + `&page=${i}`));
+    const now = Date.now();
+    if (cachedGames && now - lastFetch < CACHE_TIME) {
+      return cachedGames;
     }
-    let games = await Promise.all(promises).then((results) => results.flat());
+    const promises = Array.from({ length: 10 }, (_, i) =>
+      axios.get(`${URL}&page=${i + 1}`)
+    );
 
-    let apiGames = [];
-    for (let i = 0; i < games.length; i++) {
-      let game = games[i];
-      apiGames.push({
-        id: game.id,
-        name: game.name,
-        image: game.background_image,
-        releaseDate: game.released,
-        genres:game.genres.map((g) => ({name: g.name})),
-        rating: game.metacritic,
-        platforms: game.platforms.map((p) => p.platform.name),
-      });
-    }
+    const results = await Promise.all(promises);
+    let games = results.flatMap((res) => res.data.results);
 
-    return apiGames;
+    cachedGames = games.map((game) => ({
+      id: game.id,
+      name: game.name,
+      image: game.background_image,
+      releaseDate: game.released,
+      genres: game.genres.map((g) => ({ name: g.name })),
+      rating: game.rating|| "Undetermined",
+      metacritic: game.metacritic||"Undetermined",
+      platforms: game.platforms.map((p) => p.platform.name),
+    }));
+    lastFetch = Date.now();
+    return cachedGames;
   } catch (error) {
-    console.log("couldn't get games" + error);
+    console.error("Couldn't fetch Games:", error);
+    return [];
   }
 };
 
 const getGamesDb = async () => {
   try {
-    let dbCreated = await Videogames.findAll({
+    return await Videogames.findAll({
       include: {
         model: Genres,
         attributes: ["name"],
-        through: {
-          attributes: [],
-        },
+        trough: { attributes: [] },
       },
     });
-    return dbCreated;
   } catch (error) {
-    return error;
+    console.log("Error fetching games from DB", error);
+    return [];
   }
 };
 
 const getAllGames = async () => {
-  const apiGames = await getGames();
-  const dbGames = await getGamesDb();
-  const allData = apiGames.concat(dbGames);
-  return allData;
+  const [apiGames, dbGames] = await Promise.all([getGames(), getGamesDb()]);
+  return [...apiGames, ...dbGames];
 };
 
 const getAll = async (req, res) => {
-  let name = req.query.name;
-  let games = await getAllGames();
-
   try {
+    const { name, page = 1, limit = 15 } = req.query;
+    let games = await getAllGames();
+
     if (name) {
-      let gameName = games.filter((g) =>
+      games = games.filter((g) =>
         g.name.toLowerCase().includes(name.toLowerCase())
       );
-
-      if (gameName.length) {
-        let just15 = gameName.slice(0, 15);
-        const count = just15.length;
-        res.status(200).send({
-          count,
-          just15,
-        });
-      } else {
-        res.status(404).send("Game not found");
-      }
     }
-    res.status(200).send(games);
+
+    const total = games.length;
+    const totalPages = Math.ceil(total/limit);
+    const currentPage= Math.min(Math.max(Number(page),1), totalPages)
+    const start = (currentPage -1)*limit;
+    const paginatedGames = games.slice(start, start + limit);
+
+    res.status(200).json({
+      total,
+      page: currentPage,
+      totalPages,
+      limit: Number(limit),
+      games: paginatedGames.length> 0 ? paginatedGames : "No games found",
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
-module.exports = { getAllGames, getAll, getUrl };
+module.exports = { getAllGames, getAll };
