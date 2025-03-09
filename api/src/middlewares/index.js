@@ -5,7 +5,7 @@ const cors = require('cors')
 
 module.exports = (server)=>{
     server.use(express.urlencoded({extended: true, limit:'50mb'}));
-    server.use(express.json({limit:'50mbn'}));
+    server.use(express.json({limit:'50mb'}));
     server.use(cookieParser());
     server.use(morgan('dev'));
 

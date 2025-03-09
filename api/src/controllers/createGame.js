@@ -1,31 +1,40 @@
 const { Videogames, Genres } = require("../db");
 
-const createGame = async (req, res) => {
+
+const createGame = async (req, res,next) => {
+  console.log("Entering the game creation function")
   try {
-    const { name, description, releaseDate, rating, platforms, created, genres } =
-      req.body;
-    let results = await Videogames.create({
+    const { name, description, releaseDate, rating, platforms, genres } = req.body;
+    
+
+    //Create the game in the database
+    const newGame = await Videogames.create({
       name,
       description,
       releaseDate,
       rating,
-      platforms,
-      created,
+      platforms:Array.isArray(platforms)? platforms : [platforms],
     });
-    console.log(genres)
-    genres.forEach(async (genre) => {
+console.log(newGame)
 
-      let genreId = await Genres.findAll({ where: { name: genre } }); 
-      results.addGenres(genreId);
+    //Search genres in DB
+    if(genres&&genres.length > 0){
+      const genreRecords = await Genres.findAll({
+        where:{name:genres}
+      });
 
-    })
-    res.send({
-      msg: "Game created",
-      results
+      //Asociate found genres to the created game
+      await newGame.addGenres(genreRecords);
+    }
+
+
+    res.status(201).json({
+      msg:"Game created succesfully",
+      game: newGame
     });
   } catch (error) {
-    console.log(error);
-    res.status(404).send("couldn't find genres")
+    console.error("Error creating game:",error);
+    next(error);
   }
 };
 

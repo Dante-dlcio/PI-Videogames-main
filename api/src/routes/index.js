@@ -10,9 +10,9 @@ const getDetailRoute = require('./getDetailRoute')
 const router = Router();
 
 
-router.use('/videogame', getDetailRoute)
 router.use('/videogames',getVideogamesRoute)
 router.use('/genres',getGenresRoute)
+router.use('/videogame', getDetailRoute)
 
 
 
