@@ -2,7 +2,7 @@ const { Videogames, Genres } = require("../db");
 
 
 const createGame = async (req, res,next) => {
-  console.log("Entering the game creation function")
+
   try {
     const { name, description, releaseDate, rating, platforms, genres } = req.body;
     

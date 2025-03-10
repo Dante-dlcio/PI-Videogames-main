@@ -91,4 +91,4 @@ const getAll = async (req, res) => {
   }
 };
 
-module.exports = { getAllGames, getAll };
+module.exports = { getGames,getAllGames, getAll };
