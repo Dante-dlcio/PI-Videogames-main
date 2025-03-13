@@ -1,40 +1,63 @@
-const { getGames } = require("./getGames");
+require("dotenv").config();
+const axios = require("axios");
+const nodeCache = require("node-cache");
+const FEATURED_CACHE = new nodeCache({ stdTLL: 86400});
 
-const getFeaturedGames = async (req, res) => {
+const {API_KEY} = process.env;
+const API_URL = `https://api.rawg.io/api/games?key=${API_KEY}&dates=2024-01-01,2025-03-01&ordering=-added`;	
+
+
+const getFeaturedGames = async (req, res,next) => {
   try {
-    const allGames = await getGames();
+    console.log("Fetching featured games");
+    //verify if the data is already in the cache
+    let cachedFeatured = FEATURED_CACHE.get("featured_games")
+    if(!cachedFeatured){
+        console.log("Fetching from API");
 
-    console.log("Juegos antes de filtar", allGames.length);
+    // Call the API
+    let allGames = [];
+    let page = 1;
+    while (allGames.length <= 100){
+    const response = await axios.get(`${API_URL}&page=${page}`);
+    const games = response.data.results
+    .map((game)=>({
+        id: game.id,
+        name: game.name,
+        image: game.background_image,
+        rating: game.rating || "Undetermined",
+        genres: game.genres.map((g)=>g.name),
+        platforms: game.parent_platforms.map((p)=>p.platform.name),
+    }));
+    allGames.push(...games);
+    page++;
+    };
+    console.log("Fetched games", allGames.length);
 
-    //Filtering games by latest release and metacritic
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-      
-      const featuredGames = allGames.filter((game) => {
-        console.log(
-            `Evaluando ${game.name} -> Metacritic: ${game.metacritic}, fecha de lanzamiento: ${game.releaseDate}`
-        )
+    //Filter games with metacritic score > 4
+    cachedFeatured = allGames.filter((game)=>game.rating>4);
+    console.log("Top games", cachedFeatured.length);
 
-      return (
-        game.metacritic !== "Undetermined" &&
-        game.metacritic > 80 &&
-        new Date(game.releaseDate) >= oneYearAgo
-      );
-    });
+    //Save the selected games in the cache
+    FEATURED_CACHE.set("featured_games", cachedFeatured);
+  } else{
+    console.log("Serving from cache");
+  }
 
-    console.log("juegos que cumplen el criterio:", featuredGames.length);
+    //shufle the games
+    for (let i = cachedFeatured.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random()* (i+1));
+      [cachedFeatured[i], cachedFeatured[j]] = [cachedFeatured[j], cachedFeatured[i]];
+    }
 
-    //selecting 7 random games
-    const shuffled = featuredGames.sort(() => 0.5 - Math.random());
-    const selectedGames = shuffled.slice(0, 7);
-
-console.log("juegos seleccionados", selectedGames.length);
-
-    console.log(selectedGames);
-    res.status(200).json(selectedGames);
+    //select 5 random games
+    const selectedGames = cachedFeatured.slice(0,5);
+    console.log("Selected games", selectedGames.length);
+    
+    return res.json(selectedGames);
   } catch (error) {
     console.error("Error fetching featured games", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 };
 
