@@ -1,12 +1,13 @@
-const axios = require("axios");
-const { Genres } = require("../db");
-const { API_KEY } = process.env;
-const { v4: uuidv4 } = require("uuid");
+import "dotenv/config.js";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { Genres } from "../db.js";
 
+const { API_KEY } = process.env;
 const url = `https://api.rawg.io/api/genres?key=${API_KEY}`;
 
-//get Genres if it doesn't exist
-const getGenres = async () => {
+// Fetch & upsert Genres from RAWG
+export const getGenres = async () => {
   try {
     const { data } = await axios.get(url);
     const genres = data.results.map((g) => ({
@@ -16,7 +17,7 @@ const getGenres = async () => {
       image: g.image_background,
     }));
 
-    //avoid duplicates verifying if there are genres in DB
+    // Avoid duplicates: findOrCreate by api_id
     for (const genre of genres) {
       await Genres.findOrCreate({
         where: { api_id: genre.api_id },
@@ -30,14 +31,13 @@ const getGenres = async () => {
   }
 };
 
-//function to get all genres from DB
-const getAllGenres = async (req, res) => {
+// Get all genres from DB
+export const getAllGenres = async (req, res) => {
   try {
     const genres = await Genres.findAll();
-    res.status(200).json(genres);
+    return res.status(200).json(genres);
   } catch (error) {
     console.error("Error fetching genres from DB", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-module.exports = { getGenres, getAllGenres };

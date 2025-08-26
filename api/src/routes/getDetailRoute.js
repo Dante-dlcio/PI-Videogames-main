@@ -1,9 +1,8 @@
-const{ Router } = require('express');
-const {getDetail} = require('../controllers/getGamesDetails')
+import { Router } from "express";
+import { getDetail } from "../controllers/getGamesDetails.js";
+
 const router = Router();
 
+router.get("/:id", getDetail);
 
- router.get('/:id',getDetail)
-
-
-module.exports = router
+export default router;
