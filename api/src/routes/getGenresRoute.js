@@ -1,10 +1,18 @@
-const{ Router } = require('express');
-const {getAllGenres} = require('../controllers/getGenres')
+import { Router } from "express";
+import { getAllGenres, getGenres } from "../controllers/getGenres.js";
+
 const router = Router();
 
- const {Videogames, Genres} = ('../db.js');
+// First populate DB, then get all genres
+router.get("", async (req, res, next) => {
+  try {
+    // First fetch and populate genres from API
+    await getGenres();
+    // Then get all genres from DB
+    await getAllGenres(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
 
- router.get('',getAllGenres)
-
-
-module.exports = router
+export default router;

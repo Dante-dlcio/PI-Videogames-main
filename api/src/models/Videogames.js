@@ -1,8 +1,6 @@
-const { DataTypes } = require("sequelize");
-// Exportamos una funcion que define el modelo
-// Luego le injectamos la conexion a sequelize.
+import { DataTypes } from "sequelize";
 
-module.exports = (sequelize) => {
+export default (sequelize) => {
   // defino el modelo
   sequelize.define(
     "videogame",
@@ -32,6 +30,14 @@ module.exports = (sequelize) => {
       platforms: {
         type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false,
+      },
+      image: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      backgroundImage: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
       },
       created: {
         type: DataTypes.BOOLEAN,
