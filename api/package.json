@@ -1,13 +1,14 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -L",
-    "test": "mocha -w ./tests/**/*.spec.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "NODE_ENV=test jest --detectOpenHandles"
   },
-  "author": "Henry",
+  "author": "Erio",
   "license": "ISC",
   "engines": {
     "node": ">=20.17.0",
@@ -20,7 +21,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "fetch": "^1.1.0",
     "html-to-text": "^9.0.5",
     "moment": "^2.30.1",
     "morgan": "^1.10.0",
@@ -33,8 +33,11 @@
   },
   "devDependencies": {
     "chai": "^5.2.0",
+    "eslint": "^9.34.0",
+    "jest": "^30.0.5",
     "mocha": "^11.1.0",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
+    "sequelize-cli": "^6.6.3",
     "supertest": "^7.0.0",
     "supertest-session": "^5.0.1"
   }

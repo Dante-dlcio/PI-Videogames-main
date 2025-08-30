@@ -1,15 +1,16 @@
-require("dotenv").config();
-const { validate: isUUID } = require("uuid");
-const axios = require("axios");
-const { Videogames, Genres } = require("../db");
-const { htmlToText } = require("html-to-text");
-const { API_KEY } = process.env;
+import "dotenv/config.js";
+import axios from "axios";
+import { validate as isUUID } from "uuid";
+import { htmlToText } from "html-to-text";
+import { Videogames, Genres } from "../db.js";
+import { mapGenres, mapPlatforms, CACHE_TIMES } from "../utils/index.js";
 
+const { API_KEY } = process.env;
 const URL = `https://api.rawg.io/api/games`;
 
-//memory cache
-const gameCache ={};
-const CACHE_TIME = 1000 * 60 * 10
+// Memory cache
+const gameCache = {};
+const CACHE_TIME = CACHE_TIMES.GAME_DETAIL;
 
 const cleanDescription = (html) => {
   if (!html) return "No description available";
@@ -20,23 +21,28 @@ const cleanDescription = (html) => {
   // Normalize line breaks
   text = text.replace(/\n\n/g, " ").replace(/\n/g, ". ");
 
-  //divide text in english and spanish
-  let [englishPart, spanishPart] = text.split(" Español.");
+  // Divide text in English and Spanish
+  const [englishPart, spanishPart] = text.split(" Español.");
 
   return {
-    english: englishPart ? englishPart.trim() : "No English description available.",
-    spanish: spanishPart ? spanishPart.trim() : "No Spanish description available.",
+    english: englishPart
+      ? englishPart.trim()
+      : "No English description available.",
+    spanish: spanishPart
+      ? spanishPart.trim()
+      : "No Spanish description available.",
   };
 };
 
-const getGameDetail = async (id) => {
+export const getGameDetail = async (id) => {
   try {
     const now = Date.now();
-    if(gameCache[id]&&now-gameCache[id].timestamp>CACHE_TIME){
+    // Serve from cache if not expired
+    if (gameCache[id] && now - gameCache[id].timestamp < CACHE_TIME) {
       return gameCache[id].data;
     }
-    //uuid validation for Db
-    //search in database
+
+    // If it's a UUID, try database first
     if (isUUID(id)) {
       const gameFromDb = await Videogames.findOne({
         where: { id },
@@ -55,19 +61,18 @@ const getGameDetail = async (id) => {
           image: gameFromDb.image,
           releaseDate: gameFromDb.releaseDate,
           rating: gameFromDb.rating || "Undetermined.",
-          genres: gameFromDb.Genres.map((g) => g.name),
+          genres: mapGenres(gameFromDb.Genres || []),
           platforms: gameFromDb.platforms || ["Unknown"],
           backgroundImage: gameFromDb.backgroundImage || gameFromDb.image,
         };
-        //Saving in cache
-        gameCache[id] = {data:gameData, timestamp:now};
-        return gameData
+        gameCache[id] = { data: gameData, timestamp: now };
+        return gameData;
       }
     }
 
-    //Search in API
+    // Fetch from external API
     const { data: gameData } = await axios.get(`${URL}/${id}?key=${API_KEY}`);
-    const fromattedGame = {
+    const formattedGame = {
       id: gameData.id,
       name: gameData.name,
       description: cleanDescription(gameData.description),
@@ -75,28 +80,22 @@ const getGameDetail = async (id) => {
       releaseDate: gameData.released,
       rating: gameData.rating || "Undetermined.",
       metacritic: gameData.metacritic || "Undetermined.",
-      genres: gameData.genres.map((g) => g.name),
-      platforms: gameData.parent_platforms
-        ? gameData.parent_platforms.map((p) => p.platform.name)
-        : gameData.platforms
-        ? gameData.platforms.map((p) => p.platform.name)
-        : ["Unknown"],
+      genres: mapGenres(gameData.genres),
+      platforms: mapPlatforms(gameData.platforms, gameData.parent_platforms),
       website: gameData.website || "No website available.",
       backgroundImage:
         gameData.background_image_additional || gameData.background_image,
     };
 
-    //Saving in cache
-    gameCache[id] = {data: fromattedGame, timestamp:now}
-
-    return fromattedGame
+    gameCache[id] = { data: formattedGame, timestamp: now };
+    return formattedGame;
   } catch (error) {
     console.error("Error fetching game details:", error.message);
     return null;
   }
 };
 
-const getDetail = async (req, res) => {
+export const getDetail = async (req, res) => {
   try {
     const { id } = req.params;
     const gameDetail = await getGameDetail(id);
@@ -104,11 +103,9 @@ const getDetail = async (req, res) => {
     if (!gameDetail) {
       return res.status(404).json({ message: "Game not found" });
     }
-    res.json(gameDetail);
+    return res.json(gameDetail);
   } catch (error) {
     console.error("Error in getDetails:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-module.exports = { getDetail };

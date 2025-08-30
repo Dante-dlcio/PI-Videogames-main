@@ -1,71 +1,116 @@
-require('dotenv').config();
-const { Sequelize } = require('sequelize');
-const fs = require('fs');
-const path = require('path');
- 
-const {
-  DB_USER, DB_PASSWORD, DB_HOST,DB_URL
-} = process.env;
+import dotenv from "dotenv";
+import { Sequelize } from "sequelize";
+import { fileURLToPath } from "url";
+import { dirname, join, basename } from "path";
+import fs from "fs";
 
+dotenv.config();
 
-//Sequelize configuration
-const sequelize = new Sequelize(DB_URL||`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/videogames`, {
-  logging: false, // set to console.log to see the raw SQL queries
-  native: false, // lets Sequelize know we can use pg-native for ~30% more speed
-  define:{
-    underscored:true,//Uses snake_case instead of camelCase in the column names
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const { DB_USER, DB_PASSWORD, DB_HOST } = process.env;
+
+const config = {
+  development: {
+    username: DB_USER,
+    password: DB_PASSWORD,
+    database: "videogames_dev",
+    host: DB_HOST,
+    dialect: "postgres",
+    logging: false,
+    dialectOptions: {
+      // Opciones específicas para PostgreSQL 17
+      ssl: false,
+      native: true,
+    },
+    define: {
+      timestamps: false,
+      underscored: true,
+    },
+  },
+  production: {
+    username: DB_USER,
+    password: DB_PASSWORD,
+    database: "videogames_prod",
+    host: DB_HOST,
+    dialect: "postgres",
+    logging: false,
+  },
+};
+
+// Aseguramos que tengamos un ambiente por defecto
+const env = process.env.NODE_ENV || "development";
+
+const sequelize = new Sequelize(
+  config[env].database,
+  config[env].username,
+  config[env].password,
+  {
+    host: config[env].host || "127.0.0.1",
+    dialect: config[env].dialect,
+    logging: config[env].logging,
   }
-});
+);
 
-
-//Error handling in the conection
-(async()=>{
-  try{
-    await sequelize.authenticate();
-    console.log('✅ Conection to database succesfully established')
-  } catch(error){
-    console.error('❌ Error conecting to the database',error)
-  }
-})()
-
-
-const basename = path.basename(__filename);
+const currentFile = basename(__filename);
 const modelDefiners = [];
 
-// Leemos todos los archivos de la carpeta Models, los requerimos y agregamos al arreglo modelDefiners
-fs.readdirSync(path.join(__dirname, '/models'))
-  .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
-  .forEach((file) => {
-    modelDefiners.push(require(path.join(__dirname, '/models', file)));
-  });
+// Lectura dinámica de modelos
+const modelFiles = fs
+  .readdirSync(join(__dirname, "models"))
+  .filter(
+    (file) =>
+      file.indexOf(".") !== 0 &&
+      file !== currentFile &&
+      file.slice(-3) === ".js"
+  );
 
-// Injectamos la conexion (sequelize) a todos los modelos
-modelDefiners.forEach(model => model(sequelize));
+// Importación dinámica de modelos
+for (const file of modelFiles) {
+  const fullPath = join(__dirname, "models", file);
+  const modelModule = await import(fullPath);
+  // En CJS `module.exports = fn` llega como default; en ESM export default fn también.
+  const definer =
+    modelModule.default || modelModule[Object.keys(modelModule)[0]];
+  if (typeof definer === "function") {
+    modelDefiners.push(definer);
+  } else {
+    console.warn(
+      `Modelo no válido en ${file}. Exporta una función por default.`
+    );
+  }
+}
 
-// Capitalizamos los nombres de los modelos ie: product => Product
+// Injectamos la conexión (sequelize) a todos los modelos
+modelDefiners.forEach((model) => model(sequelize));
+
+// Capitalizamos los nombres de los modelos
 const entries = Object.entries(sequelize.models);
-const capEntries = entries.map(([name, model])=>[name[0].toUpperCase() + name.slice(1), model])
-sequelize.models = Object.fromEntries(capEntries)
+const capsEntries = entries.map(([key, value]) => [
+  key[0].toUpperCase() + key.slice(1),
+  value,
+]);
+sequelize.models = Object.fromEntries(capsEntries);
 
-// En sequelize.models están todos los modelos importados como propiedades
-// Para relacionarlos hacemos un destructuring
+// Guard clause para modelos requeridos
+if (!sequelize.models.Videogame || !sequelize.models.Genre) {
+  console.error(
+    "Model loading error. Available models:",
+    Object.keys(sequelize.models)
+  );
+  throw new Error(
+    "Videogame or Genre model not found. Check models directory path and exports."
+  );
+}
 
-const { Videogames,Genres } = sequelize.models;
+// Relaciones entre modelos
+const { Videogame, Genre } = sequelize.models;
+Videogame.belongsToMany(Genre, { through: "videogame_genre" });
+Genre.belongsToMany(Videogame, { through: "videogame_genre" });
 
-//Relaciones
-
-Videogames.belongsToMany(Genres,{
-  through: 'videogames-genres',
-   timestamps: false,
-  foreignKey: 'videogame_id',
-  });
-Genres.belongsToMany(Videogames,{
-  through: 'videogames-genres',
-   timestamps: false,
-  foreignKey:'genre_id',
- });
-
-module.exports = {
-  ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
-  conn: sequelize,     // para importart la conexión { conn } = require('./db.js');
-};
+// ESM named exports (identifiers only)
+export { Videogame, Genre };
+export const Genres = Genre; // alias retro‑compatible
+export const Videogames = Videogame; // alias retro‑compatible
+export const conn = sequelize;

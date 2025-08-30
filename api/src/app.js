@@ -1,18 +1,27 @@
-const express = require('express');
-const routes = require('./routes/index.js');
-require('./db.js');
+import express from "express";
+import cookieParser from "cookie-parser";
+import morgan from "morgan";
+import cors from "cors";
+import routes from "./routes/index.js";
 
-const server = express();
-server.name = 'API';
+const app = express();
 
-//Middlewares
-require('./middlewares')(server)
+// Middlewares
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use(morgan("dev"));
+app.use(cors());
 
-//Rutes
-server.use('/', routes);
+// Routes
+app.use("/", routes);
 
-// Error catching endware.
-const errorHandler= require('./middlewares/errorHandler.js');
-server.use(errorHandler);
+// Error catching endware
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const message = err.message || err;
+  console.error(err);
+  res.status(status).send(message);
+});
 
-module.exports = server;
+export default app;
