@@ -3,13 +3,14 @@ import axios from "axios";
 import { validate as isUUID } from "uuid";
 import { htmlToText } from "html-to-text";
 import { Videogames, Genres } from "../db.js";
+import { mapGenres, mapPlatforms, CACHE_TIMES } from "../utils/index.js";
 
 const { API_KEY } = process.env;
 const URL = `https://api.rawg.io/api/games`;
 
 // Memory cache
 const gameCache = {};
-const CACHE_TIME = 1000 * 60 * 10; // 10 minutes
+const CACHE_TIME = CACHE_TIMES.GAME_DETAIL;
 
 const cleanDescription = (html) => {
   if (!html) return "No description available";
@@ -60,7 +61,7 @@ export const getGameDetail = async (id) => {
           image: gameFromDb.image,
           releaseDate: gameFromDb.releaseDate,
           rating: gameFromDb.rating || "Undetermined.",
-          genres: (gameFromDb.Genres || []).map((g) => g.name),
+          genres: mapGenres(gameFromDb.Genres || []),
           platforms: gameFromDb.platforms || ["Unknown"],
           backgroundImage: gameFromDb.backgroundImage || gameFromDb.image,
         };
@@ -79,12 +80,8 @@ export const getGameDetail = async (id) => {
       releaseDate: gameData.released,
       rating: gameData.rating || "Undetermined.",
       metacritic: gameData.metacritic || "Undetermined.",
-      genres: gameData.genres.map((g) => g.name),
-      platforms: gameData.parent_platforms
-        ? gameData.parent_platforms.map((p) => p.platform.name)
-        : gameData.platforms
-        ? gameData.platforms.map((p) => p.platform.name)
-        : ["Unknown"],
+      genres: mapGenres(gameData.genres),
+      platforms: mapPlatforms(gameData.platforms, gameData.parent_platforms),
       website: gameData.website || "No website available.",
       backgroundImage:
         gameData.background_image_additional || gameData.background_image,
