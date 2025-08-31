@@ -9,14 +9,11 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
+const { DATABASE_URL } = process.env;
 
 const config = {
   development: {
-    username: DB_USER,
-    password: DB_PASSWORD,
-    database: "videogames_dev",
-    host: DB_HOST,
+    url: DATABASE_URL,
     dialect: "postgres",
     logging: false,
     dialectOptions: {
@@ -29,10 +26,7 @@ const config = {
     },
   },
   production: {
-    username: DB_USER,
-    password: DB_PASSWORD,
-    database: DB_NAME,
-    host: DB_HOST,
+    url: DATABASE_URL,
     dialect: "postgres",
     logging: false,
     dialectOptions: {
@@ -50,23 +44,17 @@ const config = {
 
 const env = process.env.NODE_ENV || "development";
 
-const sequelize = new Sequelize(
-  config[env].database,
-  config[env].username,
-  config[env].password,
-  {
-    host: config[env].host,
-    dialect: config[env].dialect,
-    logging: config[env].logging,
-    dialectOptions: config[env].dialectOptions,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000,
-    },
-  }
-);
+const sequelize = new Sequelize(config[env].url, {
+  dialect: config[env].dialect,
+  logging: config[env].logging,
+  dialectOptions: config[env].dialectOptions,
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+});
 
 const currentFile = basename(__filename);
 const modelDefiners = [];
