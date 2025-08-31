@@ -6,7 +6,6 @@ import { Genres } from "../db.js";
 const { API_KEY } = process.env;
 const url = `https://api.rawg.io/api/genres?key=${API_KEY}`;
 
-// Fetch & upsert Genres from RAWG
 export const getGenres = async () => {
   try {
     const { data } = await axios.get(url);
@@ -17,21 +16,17 @@ export const getGenres = async () => {
       image: g.image_background,
     }));
 
-    // Avoid duplicates: findOrCreate by api_id
     for (const genre of genres) {
       await Genres.findOrCreate({
         where: { api_id: genre.api_id },
         defaults: genre,
       });
     }
-
-    console.log("Genres updated successfully");
   } catch (error) {
     console.error("Error fetching genres:", error.message);
   }
 };
 
-// Get all genres from DB
 export const getAllGenres = async (req, res) => {
   try {
     const genres = await Genres.findAll();

@@ -8,20 +8,14 @@ import { mapGenres, mapPlatforms, CACHE_TIMES } from "../utils/index.js";
 const { API_KEY } = process.env;
 const URL = `https://api.rawg.io/api/games`;
 
-// Memory cache
 const gameCache = {};
 const CACHE_TIME = CACHE_TIMES.GAME_DETAIL;
 
 const cleanDescription = (html) => {
   if (!html) return "No description available";
 
-  // Convert HTML to plain text
   let text = htmlToText(html, { wordwrap: false });
-
-  // Normalize line breaks
   text = text.replace(/\n\n/g, " ").replace(/\n/g, ". ");
-
-  // Divide text in English and Spanish
   const [englishPart, spanishPart] = text.split(" Español.");
 
   return {
@@ -37,12 +31,10 @@ const cleanDescription = (html) => {
 export const getGameDetail = async (id) => {
   try {
     const now = Date.now();
-    // Serve from cache if not expired
     if (gameCache[id] && now - gameCache[id].timestamp < CACHE_TIME) {
       return gameCache[id].data;
     }
 
-    // If it's a UUID, try database first
     if (isUUID(id)) {
       const gameFromDb = await Videogames.findOne({
         where: { id },
@@ -70,7 +62,6 @@ export const getGameDetail = async (id) => {
       }
     }
 
-    // Fetch from external API
     const { data: gameData } = await axios.get(`${URL}/${id}?key=${API_KEY}`);
     const formattedGame = {
       id: gameData.id,

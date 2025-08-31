@@ -1,7 +1,6 @@
 import { DataTypes } from "sequelize";
 
 export default (sequelize) => {
-  // defino el modelo
   sequelize.define(
     "videogame",
     {

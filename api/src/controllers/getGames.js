@@ -5,7 +5,6 @@ import { mapGenres, mapPlatforms, CACHE_TIMES } from "../utils/index.js";
 
 const { API_KEY } = process.env;
 
-// GAMES
 const URL = `https://api.rawg.io/api/games?key=${API_KEY}`;
 let cachedGames = null;
 let lastFetch = 0;
@@ -50,7 +49,7 @@ export const getGamesDb = async () => {
       include: {
         model: Genres,
         attributes: ["name"],
-        through: { attributes: [] }, // fixed typo: 'trough' -> 'through'
+        through: { attributes: [] },
       },
     });
   } catch (error) {

@@ -9,7 +9,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const { DB_USER, DB_PASSWORD, DB_HOST } = process.env;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
 
 const config = {
   development: {
@@ -20,7 +20,6 @@ const config = {
     dialect: "postgres",
     logging: false,
     dialectOptions: {
-      // Opciones específicas para PostgreSQL 17
       ssl: false,
       native: true,
     },
@@ -32,14 +31,23 @@ const config = {
   production: {
     username: DB_USER,
     password: DB_PASSWORD,
-    database: "videogames_prod",
+    database: DB_NAME,
     host: DB_HOST,
     dialect: "postgres",
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+    define: {
+      timestamps: false,
+      underscored: true,
+    },
   },
 };
 
-// Aseguramos que tengamos un ambiente por defecto
 const env = process.env.NODE_ENV || "development";
 
 const sequelize = new Sequelize(
@@ -47,16 +55,22 @@ const sequelize = new Sequelize(
   config[env].username,
   config[env].password,
   {
-    host: config[env].host || "127.0.0.1",
+    host: config[env].host,
     dialect: config[env].dialect,
     logging: config[env].logging,
+    dialectOptions: config[env].dialectOptions,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
   }
 );
 
 const currentFile = basename(__filename);
 const modelDefiners = [];
 
-// Lectura dinámica de modelos
 const modelFiles = fs
   .readdirSync(join(__dirname, "models"))
   .filter(
@@ -66,11 +80,9 @@ const modelFiles = fs
       file.slice(-3) === ".js"
   );
 
-// Importación dinámica de modelos
 for (const file of modelFiles) {
   const fullPath = join(__dirname, "models", file);
   const modelModule = await import(fullPath);
-  // En CJS `module.exports = fn` llega como default; en ESM export default fn también.
   const definer =
     modelModule.default || modelModule[Object.keys(modelModule)[0]];
   if (typeof definer === "function") {
@@ -82,10 +94,8 @@ for (const file of modelFiles) {
   }
 }
 
-// Injectamos la conexión (sequelize) a todos los modelos
 modelDefiners.forEach((model) => model(sequelize));
 
-// Capitalizamos los nombres de los modelos
 const entries = Object.entries(sequelize.models);
 const capsEntries = entries.map(([key, value]) => [
   key[0].toUpperCase() + key.slice(1),
@@ -93,7 +103,6 @@ const capsEntries = entries.map(([key, value]) => [
 ]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-// Guard clause para modelos requeridos
 if (!sequelize.models.Videogame || !sequelize.models.Genre) {
   console.error(
     "Model loading error. Available models:",
@@ -104,13 +113,11 @@ if (!sequelize.models.Videogame || !sequelize.models.Genre) {
   );
 }
 
-// Relaciones entre modelos
 const { Videogame, Genre } = sequelize.models;
 Videogame.belongsToMany(Genre, { through: "videogame_genre" });
 Genre.belongsToMany(Videogame, { through: "videogame_genre" });
 
-// ESM named exports (identifiers only)
 export { Videogame, Genre };
-export const Genres = Genre; // alias retro‑compatible
-export const Videogames = Videogame; // alias retro‑compatible
+export const Genres = Genre;
+export const Videogames = Videogame;
 export const conn = sequelize;
