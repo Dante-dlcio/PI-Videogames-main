@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import app from "./src/app.js";
 import { conn } from "./src/db.js";
-import dotenv from "dotenv";
 
 dotenv.config();
 
